@@ -32,7 +32,7 @@ library(utils)
 ### Image (change to adequate image if desired)
 urlfile <- "http://ereaderbackgrounds.com/movies/bw/Frankenstein.jpg"
 file    <- "figs/frankenstein.jpg"
-outimg  <- "figs/frankTSP.png"
+outimg  <- "figs/frank_TSP.png"
 
 ### Sample size (for image points)
 sample_size <- 20000
@@ -47,12 +47,12 @@ if (!file.exists(file)) download.file(urlfile, destfile = file, mode = "wb")
 ### Load, convert to grayscale, filter image (to convert it to bw) and sample
 message("Loading image...")
 data <- imager::load.image(file) %>%
-  imager::grayscale() %>%
-  imager::threshold("45%") %>%
-  imager::as.cimg() %>%
-  as.data.frame() %>%
-  dplyr::sample_n(sample_size, weight = (1 - value)) %>%
-  dplyr::select(x, y)
+    imager::grayscale() %>%
+    imager::threshold("45%") %>%
+    imager::as.cimg() %>%
+    as.data.frame() %>%
+    dplyr::sample_n(sample_size, weight = (1 - value)) %>%
+    dplyr::select(x, y)
 
 
 
