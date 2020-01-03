@@ -5,7 +5,7 @@
 # Description:   Create path images using TSP algorithms
 # Author:        Brandon Monier
 # Created:       2020-01-03 at 15:46:46
-# Last Modified: 2020-01-03 at 16:07:27
+# Last Modified: 2020-01-03 at 16:08:54
 #--------------------------------------------------------------------
 
 #--------------------------------------------------------------------
@@ -20,7 +20,7 @@
 ## Load packages ----
 library(dplyr)
 library(ggplot2)
-library(imager)
+# library(imager)
 library(scales)
 library(stats)
 library(TSP)
@@ -29,7 +29,7 @@ library(utils)
 
 ## Global parameters ----
 
-### Image
+### Image (change to adequate image if desired)
 urlfile <- "http://ereaderbackgrounds.com/movies/bw/Frankenstein.jpg"
 file    <- "figs/frankenstein.jpg"
 outimg  <- "figs/frankTSP.png"
@@ -45,27 +45,30 @@ if (!file.exists(file)) download.file(urlfile, destfile = file, mode = "wb")
 ## Load image ----
 
 ### Load, convert to grayscale, filter image (to convert it to bw) and sample
-data <- load.image(file) %>%
-  grayscale() %>%
-  threshold("45%") %>%
-  as.cimg() %>%
-  as.data.frame()  %>%
-  sample_n(sample_size, weight=(1-value)) %>%
-  select(x,y)
+message("Loading image...")
+data <- imager::load.image(file) %>%
+  imager::grayscale() %>%
+  imager::threshold("45%") %>%
+  imager::as.cimg() %>%
+  as.data.frame() %>%
+  dplyr::sample_n(sample_size, weight = (1 - value)) %>%
+  dplyr::select(x, y)
 
 
 
 # === TSP Analysis ==================================================
 
 ## Compute distances and solve TSP (it may take a minute) ----
+message("Solving TSP...")
 solution <- data %>%
     stats::dist() %>%
     TSP::as.TSP() %>%
     TSP::solve_TSP(method = "arbitrary_insertion") %>%
     as.integer()
 
+
 ## Rearrange the original points according the TSP output ----
-data_to_plot <- data[solution,]
+data_to_plot <- data[solution, ]
 
 
 
@@ -82,6 +85,7 @@ data_to_plot %>%
 
 
 ## Do you like the result? Save it! (Change the filename if you want) ----
+message("Saving TSP image...")
 ggsave(
     filename = outimg,
     dpi      = 600,
